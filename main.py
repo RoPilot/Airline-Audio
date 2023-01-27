@@ -5,22 +5,24 @@ import time
 # VARS
 flightStarted = False
 
-# STATUS FORM (State, Speed, Altitude, VS)
+# STATUS FORM (State, Speed, Altitude, VS, audio, delay.)
 # Speed, where -1 is not used
 # Altitude where -1 is not used
 # VS where 9999 is not used.
+# Audio where None is not used.
+# Delay where -1 is not used.
 
 currentState = {
-                "Departure-Parked": [False, -1, -1, 9999], 
-                "Pushback": [False, 5, -1, 9999], 
-                "Taxi-Out": [False, 10, -1, 9999], 
-                "Takeoff": [False, 40, -1, 9999], 
-                "Climb": [False, 240, -1, 9999], 
-                "Cruise": [False, -1, -1, 0], 
-                "Decent": [False, -1, -1, -1000], 
-                "Landing": [False, 180, 3000, -1], 
-                "Taxi-In": [False, 50, -1, 9999], 
-                "Arrival-Parked": [False, 0, -1, 9999]
+                "Departure-Parked": [False, -1, -1, 9999, "HoldMyHand.mp3", -1], 
+                "Pushback": [False, 5, -1, 9999, "Saftey", 8], 
+                "Taxi-Out": [False, 10, -1, 9999, "Saftey", -1], 
+                "Takeoff": [False, 40, -1, 9999, None, -1], 
+                "Climb": [False, 230, -1, 9999, "Climb", 10], 
+                "Cruise": [False, -1, -1, 0, "Cruise", 600], 
+                "Decent": [False, -1, -1, -1000, "Descent", 600], 
+                "Landing": [False, 180, 3000, -1, None, -1], 
+                "Taxi-In": [False, 50, -1, 9999, "Final Audio", -1], 
+                "Arrival-Parked": [False, 0, -1, 9999, None, -1]
                 }
 
 def checkState():
@@ -29,11 +31,11 @@ def checkState():
     for item in currentState:
         if currentState[item][0] == True: 
             trueState = item
+
             try:
                 nextState = list(currentState)[list(currentState).index(item) + 1]
             except:
                 nextState = None
-            print(nextState)
             break
 
     return trueState, nextState
@@ -41,7 +43,8 @@ def checkState():
 def startFlight():
     while flightStarted == True:
         time.sleep(2)
-        currentState = checkState()
+        currentState, nextState = checkState()
+
         
         
 
