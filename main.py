@@ -1,10 +1,54 @@
 import tkinter as tk
 import tkinter.font as tkFont
+import time
+
+# VARS
+flightStarted = False
+
+# STATUS FORM (State, Speed, Altitude, VS)
+# Speed, where -1 is not used
+# Altitude where -1 is not used
+# VS where 9999 is not used.
+
+currentState = {
+                "Departure-Parked": [False, -1, -1, 9999], 
+                "Pushback": [False, 5, -1, 9999], 
+                "Taxi-Out": [False, 10, -1, 9999], 
+                "Takeoff": [False, 40, -1, 9999], 
+                "Climb": [False, 240, -1, 9999], 
+                "Cruise": [False, -1, -1, 0], 
+                "Decent": [False, -1, -1, -1000], 
+                "Landing": [False, 180, 3000, -1], 
+                "Taxi-In": [False, 50, -1, 9999], 
+                "Arrival-Parked": [False, 0, -1, 9999]
+                }
+
+def checkState():
+    trueState = None
+    nextState = None
+    for item in currentState:
+        if currentState[item][0] == True: 
+            trueState = item
+            try:
+                nextState = list(currentState)[list(currentState).index(item) + 1]
+            except:
+                nextState = None
+            print(nextState)
+            break
+
+    return trueState, nextState
+
+def startFlight():
+    while flightStarted == True:
+        time.sleep(2)
+        currentState = checkState()
+        
+        
 
 class App:
     def __init__(self, root):
         #setting title
-        root.title("undefined")
+        root.title("Airline Audio")
         #setting window size
         width=300
         height=500
@@ -109,8 +153,15 @@ class App:
 
     def start_flight_button_command(self):
         print("START FLIGHT")
+        global flightStarted
+        flightStarted = True
+        startFlight()
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = App(root)
-    root.mainloop()
+#if __name__ == "__main__":
+ #   root = tk.Tk()
+  #  app = App(root)
+   # root.mainloop()
+
+
+flightStarted = True
+startFlight()
