@@ -11,7 +11,11 @@ flightStarted = False
 pygame.mixer.init()
 
 if os.sys.platform == ("win32" or "win64"):
-    os.add_dll_directory(r"C:\Users\ropil\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\site-packages\pygame")
+    app_data = os.getenv('LOCALAPPDATA')
+    final_path = (app_data + r"\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\site-packages\pygame")
+    os.add_dll_directory(final_path)
+    #os.add_dll_directory(r"C:\Users\ropil\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\site-packages\pygame")
+    pass
 
 # STATUS FORM (State, Speed, Altitude, VS, audio, delay.)
 # Speed, where None is not used
@@ -128,17 +132,19 @@ def airline_select_button_command():
 def settings_cog_command():
     print("SETTINGS")
 
-
-def autouse_simdata_check_command():
-    print("AUTOUSE SIM DATA")
-
-
 def start_flight_button_command():
     print("START FLIGHT")
     global flightStarted
     flightStarted = True
     startFlight()
 
+def pause_music_command():
+    pass
+
+def set_volume(val):
+    volume = float(val)
+    pygame.mixer.music.set_volume(volume)
+    
 root = tk.Tk()
 
 def createUI():
@@ -209,18 +215,6 @@ def createUI():
     divider1["justify"] = "center"
     divider1["text"] = ""
     divider1.place(x=0,y=100,width=300,height=1)
-    # AUTO USE SIM DATA CHECK
-    global autouse_simdata_check
-    autouse_simdata_check=tk.Checkbutton(root)
-    ft = tkFont.Font(family='Arial',size=10)
-    autouse_simdata_check["font"] = ft
-    autouse_simdata_check["fg"] = "#333333"
-    autouse_simdata_check["justify"] = "center"
-    autouse_simdata_check["text"] = "Automatically Use Sim Data"
-    autouse_simdata_check.place(x=10,y=110,width=282,height=30)
-    autouse_simdata_check["offvalue"] = "0"
-    autouse_simdata_check["onvalue"] = "1"
-    autouse_simdata_check["command"] = autouse_simdata_check_command
     # START FLIGHT BUTTON
     global start_flight_button
     start_flight_button=tk.Button(root)
@@ -234,6 +228,27 @@ def createUI():
     start_flight_button["text"] = "Start Flight"
     start_flight_button.place(x=0,y=140,width=300,height=30)
     start_flight_button["command"] = start_flight_button_command
-
+    # PLAY PAUSE
+    global pauseplay
+    play_pause_button=tk.Button(root)
+    play_pause_button["bg"] = "#f0f0f0"
+    play_pause_button["borderwidth"] = "1px"
+    ft = tkFont.Font(family='Arial',size=8)
+    play_pause_button["font"] = ft
+    play_pause_button["fg"] = "#000000"
+    play_pause_button["text"] = "PAUSE"
+    play_pause_button.place(x=10,y=105,width=100,height=30)
+    play_pause_button["command"] = pause_music_command
+    
+    #SLIDER
+    volume_slider = tk.Scale(root, showvalue=False)
+    volume_slider["from"] = 0
+    volume_slider["to"] = 1
+    volume_slider["resolution"] = 0.01
+    volume_slider["orient"] = tk.HORIZONTAL
+    volume_slider.place(x=120, y=110, width=170, height=40)
+    volume_slider["command"] = set_volume
+    volume_slider.set(0.5)
+    
 createUI()
 root.mainloop()
