@@ -9,6 +9,8 @@ import pygame
 # VARS
 flightStarted = False
 pygame.mixer.init()
+playing = False
+main_colour = "#d22d25"
 
 if os.sys.platform == ("win32" or "win64"):
     app_data = os.getenv('LOCALAPPDATA')
@@ -17,12 +19,6 @@ if os.sys.platform == ("win32" or "win64"):
     #os.add_dll_directory(r"C:\Users\ropil\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\site-packages\pygame")
     pass
 
-# STATUS FORM (State, Speed, Altitude, VS, audio, delay.)
-# Speed, where None is not used
-# Altitude where None is not used
-# VS where 9999 is not used.
-# Audio where None is not used.
-# Delay where None is not used.
 buttons = {}
 
 currentState = {
@@ -50,6 +46,28 @@ positions = {
     9: [155, 360],
     10:[155, 420],
     }
+
+# FIND THE MAIN COLOUR
+try:
+    with open("settings.txt", "r") as settingsFile:
+        for line in settingsFile:
+            splitLine = line.split(":")
+            main_colour = splitLine[1]
+except:
+    print("ERROR | SETTINGS NOT FOUND - CREATING FILE NOW")
+    with open("settings.txt", "w") as file:
+        file.write("base-color:#d22d25")
+        
+    main_colour = "#d22d25"
+        
+try:
+    os.listdir("Audio")
+    print(os.listdir("Audio"))
+except:
+    print("ERROR | AUDIO FOLDER NOT FOUND - CREATING FOLDER NOW")
+    os.mkdir((os.getcwd()) + "\\Audio")
+    print((os.getcwd()) + "\\Audio")
+    
 
 def checkState():
     trueState = None
@@ -88,14 +106,13 @@ def getData(trueState, nextState):
         # CHECK TO SEE IF A NEW STATE IS DETECTED
     
 def play_audio_command(key):
+    global playing
     print("Key: " + key)
     value = buttons[key].cget("text")
-    for button in buttons:
-        text = buttons[button].cget("text")
-        
-        print(text)
     pygame.mixer.music.load("Audio\{0}\{1}.mp3".format(select_airline_input.get(), value))
     pygame.mixer.music.play()
+    playing = True
+    play_pause_button["text"] = "PLAYING"
         
         
 def airline_select_button_command():
@@ -110,7 +127,6 @@ def airline_select_button_command():
             while len(buttons) > 0:
                 i = len(buttons)
                 item = buttons.pop("button" + str(i))
-                print(item)
                 item.destroy()
                 
         print("Airline is Found")
@@ -124,22 +140,34 @@ def airline_select_button_command():
             newButtonName = "button" + str(i)
             buttons[newButtonName] = tk.Button(root, borderwidth="1px", font=tkFont.Font(family='Arial',size=8), fg="#333333", justify="center", text=text, command=lambda key=newButtonName:play_audio_command(key))
             buttons[newButtonName].place(x=(positions[i])[0],y=(positions[i])[1],width=135,height=50)
-            #buttons[newButtonName].config(command=lambda: play_audio_command(newButtonName))
         
-        print(buttons)
+        #print(buttons)
+    else:
+        print("Airline Not Found")
+        
 
                     
 def settings_cog_command():
-    print("SETTINGS")
+    os.startfile("settings.txt")
 
 def start_flight_button_command():
     print("START FLIGHT")
     global flightStarted
     flightStarted = True
-    startFlight()
+    #startFlight()
 
 def pause_music_command():
-    pass
+    global playing, play_pause_button
+    if playing == True:
+        print("Pausing")
+        pygame.mixer.music.pause()
+        playing = False
+        play_pause_button["text"] = "PAUSED"
+    else:
+        print("Playing" )
+        pygame.mixer.music.unpause()
+        playing = True
+        play_pause_button["text"] = "PLAYING"
 
 def set_volume(val):
     volume = float(val)
@@ -148,7 +176,7 @@ def set_volume(val):
 root = tk.Tk()
 
 def createUI():
-    
+    global play_pause_button, select_airline_input
     #setting title
     root.title("Airline Audio")
     #setting window size
@@ -162,7 +190,7 @@ def createUI():
 
     # TITLE TEXT
     title_text=tk.Label(root)
-    title_text["bg"] = "#ff4b4b"
+    title_text["bg"] = main_colour
     title_text["borderwidth"] = "0px"
     ft = tkFont.Font(family='Arial',size=13)
     title_text["font"] = ft
@@ -192,7 +220,6 @@ def createUI():
     select_airline_input["font"] = ft
     select_airline_input["fg"] = "#333333"
     select_airline_input["justify"] = "center"
-    select_airline_input["text"] = "SELECT AIRLINE"
     select_airline_input.place(x=10,y=50,width=237,height=20)
     # SETTINGS COG
     global settings_cog
@@ -236,7 +263,7 @@ def createUI():
     ft = tkFont.Font(family='Arial',size=8)
     play_pause_button["font"] = ft
     play_pause_button["fg"] = "#000000"
-    play_pause_button["text"] = "PAUSE"
+    play_pause_button["text"] = "PAUSED"
     play_pause_button.place(x=10,y=105,width=100,height=30)
     play_pause_button["command"] = pause_music_command
     
