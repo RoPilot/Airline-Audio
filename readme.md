@@ -27,7 +27,7 @@ When downloaded this app, you should have:
 
 - Maximum 10 audios per file (or crashes)
 - Must have Python 3.10.9 (microsoft store)
-- Must have pygame (pip3 install pygame)
+- Must have pygame (Command Line --> pip3 (or pip) install pygame)
 
 ## Notices
 
