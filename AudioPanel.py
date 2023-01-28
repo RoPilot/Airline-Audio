@@ -16,7 +16,6 @@ if os.sys.platform == ("win32" or "win64"):
     app_data = os.getenv('LOCALAPPDATA')
     final_path = (app_data + r"\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\site-packages\pygame")
     os.add_dll_directory(final_path)
-    os.add_dll_directory(r"C:\Users\ropil\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.10_qbz5n2kfra8p0\LocalCache\local-packages\Python310\site-packages\pygame")
     pass
 
 buttons = {}
